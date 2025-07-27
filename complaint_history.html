@@ -1,0 +1,154 @@
+{% extends 'layouts/app.html' %}
+
+{% block title %}Complaint History - #{{ complaint.id }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="fas fa-history text-info"></i>
+            Complaint History
+        </h2>
+        <div>
+            <a href="{% url 'complaint_detail' complaint.pk %}" class="btn btn-primary">
+                <i class="fas fa-arrow-left"></i> Back to Complaint
+            </a>
+        </div>
+    </div>
+
+    <!-- Complaint Summary -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-info-circle"></i>
+                Complaint Summary
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>ID:</strong> #{{ complaint.id }}</p>
+                    <p><strong>Subject:</strong> {{ complaint.subject }}</p>
+                    <p><strong>Category:</strong> {{ complaint.category }}</p>
+                    <p><strong>Current Status:</strong> 
+                        <span class="badge bg-{{ complaint.status|lower }}">{{ complaint.status }}</span>
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Priority:</strong> 
+                        <span class="badge bg-{{ complaint.priority|lower }}">{{ complaint.priority }}</span>
+                    </p>
+                    <p><strong>Created:</strong> {{ complaint.created_at|date:"M d, Y H:i" }}</p>
+                    <p><strong>User:</strong> 
+                        {% if complaint.is_anonymous %}
+                            <span class="text-muted">Anonymous</span>
+                        {% else %}
+                            {{ complaint.user.get_full_name|default:complaint.user.username }}
+                        {% endif %}
+                    </p>
+                    <p><strong>Archived:</strong> 
+                        {% if complaint.is_archived %}
+                            <span class="badge bg-warning">Yes</span>
+                        {% else %}
+                            <span class="badge bg-success">No</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Timeline -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-clock"></i>
+                Status History ({{ status_history.count }} entries)
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if status_history %}
+                <div class="timeline">
+                    {% for entry in status_history %}
+                    <div class="timeline-item">
+                        <div class="timeline-marker">
+                            <i class="fas fa-circle text-primary"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0">
+                                        {% if entry.old_status != entry.new_status %}
+                                            Status Changed: {{ entry.old_status }} → {{ entry.new_status }}
+                                        {% else %}
+                                            {{ entry.notes|default:"Status update" }}
+                                        {% endif %}
+                                    </h6>
+                                    <small class="text-muted">{{ entry.changed_at|date:"M d, Y H:i" }}</small>
+                                </div>
+                                <div class="card-body">
+                                    <p class="mb-2">
+                                        <strong>Changed by:</strong> 
+                                        {{ entry.changed_by.get_full_name|default:entry.changed_by.username }}
+                                    </p>
+                                    {% if entry.notes %}
+                                        <p class="mb-0">
+                                            <strong>Notes:</strong> {{ entry.notes }}
+                                        </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-history fa-2x text-muted mb-3"></i>
+                    <p class="text-muted">No status history available for this complaint.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #e9ecef;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -22px;
+    top: 10px;
+    width: 30px;
+    height: 30px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+.timeline-content {
+    margin-left: 20px;
+}
+</style>
+{% endblock %} 

@@ -1,0 +1,67 @@
+{% extends 'layouts/app.html' %}
+
+{% block title %}Archive Complaint{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-archive text-warning"></i>
+                        Archive Complaint #{{ complaint.id }}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Warning:</strong> Archiving will move this complaint to the archive. 
+                        It will no longer appear in active complaint lists but can be restored later.
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h6>Complaint Details:</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>Subject:</strong> {{ complaint.subject }}<br>
+                                <strong>Category:</strong> {{ complaint.category }}<br>
+                                <strong>Status:</strong> 
+                                <span class="badge bg-{{ complaint.status|lower }}">{{ complaint.status }}</span>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Priority:</strong> 
+                                <span class="badge bg-{{ complaint.priority|lower }}">{{ complaint.priority }}</span><br>
+                                <strong>Created:</strong> {{ complaint.created_at|date:"M d, Y" }}<br>
+                                <strong>User:</strong> {{ complaint.user.get_full_name|default:complaint.user.username }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="{{ form.archive_reason.id_for_label }}" class="form-label">
+                                Archive Reason (Optional)
+                            </label>
+                            {{ form.archive_reason }}
+                            {% if form.archive_reason.help_text %}
+                                <div class="form-text">{{ form.archive_reason.help_text }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'complaint_detail' complaint.pk %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-warning">
+                                <i class="fas fa-archive"></i> Archive Complaint
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

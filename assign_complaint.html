@@ -1,0 +1,159 @@
+{% extends "layouts/app.html" %}
+
+{% block title %}Assign Complaint - University Complaint Portal{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12 dashboard-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1><i class="fas fa-user-plus me-2"></i>Assign Complaint</h1>
+                    <p class="lead">Assign this complaint to a staff member or department</p>
+                </div>
+                <div>
+                    <a href="{% url 'complaint_detail' complaint.id %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Complaint
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h5>Complaint Details</h5>
+                </div>
+                <div class="card-body">
+                    <h6>{{ complaint.title }}</h6>
+                    <p class="text-muted">{{ complaint.description|truncatewords:30 }}</p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Category:</strong> {{ complaint.category.name }}<br>
+                            <strong>Priority:</strong> 
+                            <span class="badge 
+                                {% if complaint.priority == 'low' %}badge-secondary
+                                {% elif complaint.priority == 'medium' %}badge-info
+                                {% elif complaint.priority == 'high' %}badge-warning
+                                {% elif complaint.priority == 'urgent' %}badge-danger
+                                {% endif %}">
+                                {{ complaint.get_priority_display }}
+                            </span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Status:</strong> 
+                            <span class="badge 
+                                {% if complaint.status == 'pending' %}badge-secondary
+                                {% elif complaint.status == 'in_progress' %}badge-info
+                                {% elif complaint.status == 'resolved' %}badge-success
+                                {% elif complaint.status == 'rejected' %}badge-danger
+                                {% endif %}">
+                                {{ complaint.get_status_display }}
+                            </span><br>
+                            <strong>Created:</strong> {{ complaint.created_at|date:"M d, Y" }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h5>Assignment Form</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="{{ form.assigned_to.id_for_label }}">
+                                <i class="fas fa-user me-2"></i>Assign to Staff Member
+                            </label>
+                            {{ form.assigned_to }}
+                            {% if form.assigned_to.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.assigned_to.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <small class="form-text text-muted">Select a specific staff member to handle this complaint</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ form.department.id_for_label }}">
+                                <i class="fas fa-building me-2"></i>Assign to Department
+                            </label>
+                            {{ form.department }}
+                            {% if form.department.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.department.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <small class="form-text text-muted">Or assign to a department for general handling</small>
+                        </div>
+                        
+                        <div class="form-group d-flex justify-content-between">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-check me-2"></i>Assign Complaint
+                            </button>
+                            <a href="{% url 'complaint_detail' complaint.id %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h5><i class="fas fa-info-circle me-2"></i>Assignment Guidelines</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <strong>Staff Assignment:</strong> For specific expertise or follow-up
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <strong>Department Assignment:</strong> For general category handling
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                            <strong>Urgent Complaints:</strong> Should be assigned immediately
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-info text-info me-2"></i>
+                            <strong>Workload:</strong> Consider current staff workload
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h5><i class="fas fa-history me-2"></i>Current Assignment</h5>
+                </div>
+                <div class="card-body">
+                    {% if complaint.assigned_to %}
+                        <p><strong>Assigned to:</strong> {{ complaint.assigned_to.username }}</p>
+                    {% else %}
+                        <p class="text-muted">Not assigned to any staff member</p>
+                    {% endif %}
+                    
+                    {% if complaint.department %}
+                        <p><strong>Department:</strong> {{ complaint.department.name }}</p>
+                    {% else %}
+                        <p class="text-muted">Not assigned to any department</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

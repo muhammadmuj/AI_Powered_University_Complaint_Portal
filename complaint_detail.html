@@ -1,0 +1,377 @@
+{% extends "layouts/app.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12 dashboard-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1>Complaint Details</h1>
+                    <p class="lead">View and respond to this complaint</p>
+                </div>
+                <div>
+                    <a href="{% url 'complaint_list' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Complaints
+                    </a>
+                    {% if user.is_staff or user.is_superuser %}
+                        <a href="{% url 'complaint_history' complaint.pk %}" class="btn btn-outline-info ml-2">
+                            <i class="fas fa-history mr-2"></i>View History
+                        </a>
+                        {% if not complaint.is_archived %}
+                            <a href="{% url 'archive_complaint' complaint.pk %}" class="btn btn-outline-warning ml-2">
+                                <i class="fas fa-archive mr-2"></i>Archive
+                            </a>
+                        {% else %}
+                            <span class="badge bg-warning ml-2">
+                                <i class="fas fa-archive mr-1"></i>Archived
+                            </span>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="dashboard-card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">{{ complaint.title }}</h5>
+                    <span class="badge 
+                        {% if complaint.status == 'pending' %}badge-secondary
+                        {% elif complaint.status == 'in_progress' %}badge-info
+                        {% elif complaint.status == 'resolved' %}badge-success
+                        {% elif complaint.status == 'rejected' %}badge-danger
+                        {% endif %}">
+                        {{ complaint.get_status_display }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        {% if request.user.is_staff or request.user.is_superuser %}
+                        <small class="text-muted">Category: {{ complaint.category.name }}</small>
+                        <br>
+                        {% endif %}
+                        <small class="text-muted">
+                            Submitted by: {{ complaint.user.username }}
+                            {% if complaint.user.profile.user_type == 'teacher' %}
+                                <span class="teacher-badge"><i class="fas fa-chalkboard-teacher mr-1"></i>Teacher</span>
+                                {% if complaint.user.profile.department %}
+                                    <small>({{ complaint.user.profile.department }})</small>
+                                {% endif %}
+                            {% else %}
+                                <span class="student-badge"><i class="fas fa-user-graduate mr-1"></i>Student</span>
+                            {% endif %}
+                            on {{ complaint.created_at|date:"F d, Y" }}
+                        </small>
+                    </div>
+                    <p>{{ complaint.description|linebreaks }}</p>
+                </div>
+            </div>
+
+            <!-- Responses Section -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h5><i class="fas fa-comments mr-2"></i>Responses</h5>
+                </div>
+                <div class="card-body">
+                    {% if responses %}
+                        {% for response in responses %}
+                            <div class="response-item mb-3 p-3 border rounded">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <strong>{{ response.responder.username }}</strong>
+                                        <small class="text-muted ml-2">{{ response.created_at|date:"F d, Y g:i A" }}</small>
+                                    </div>
+                                </div>
+                                <div class="mt-2">
+                                    {{ response.response_text|linebreaks }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No responses yet.</p>
+                    {% endif %}
+                    
+                    <!-- Add Response Form -->
+                    {% if not request.user.profile.user_type == 'student' %}
+                    <form method="post" class="mt-4">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="{{ response_form.response_text.id_for_label }}">Add Response</label>
+                            {{ response_form.response_text }}
+                            {% if response_form.response_text.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in response_form.response_text.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <button type="submit" name="submit_response" class="btn btn-primary">
+                            <i class="fas fa-paper-plane mr-2"></i>Submit Response
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Internal Notes Section (Staff Only) -->
+            {% if user.is_staff or user.is_superuser %}
+            <div class="dashboard-card">
+                <div class="card-header bg-warning text-dark">
+                    <h5><i class="fas fa-eye-slash mr-2"></i>Internal Notes (Staff Only)</h5>
+                </div>
+                <div class="card-body">
+                    {% if internal_notes %}
+                        {% for note in internal_notes %}
+                            <div class="response-item mb-3 p-3 border border-warning rounded bg-light">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <strong>{{ note.responder.username }}</strong>
+                                        <small class="text-muted ml-2">{{ note.created_at|date:"F d, Y g:i A" }}</small>
+                                        <span class="badge badge-warning ml-2">Internal</span>
+                                    </div>
+                                </div>
+                                <div class="mt-2">
+                                    {{ note.response_text|linebreaks }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No internal notes yet.</p>
+                    {% endif %}
+                    
+                    <!-- Add Internal Note Form -->
+                    <form method="post" class="mt-4">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="{{ internal_form.response_text.id_for_label }}">Add Internal Note</label>
+                            {{ internal_form.response_text }}
+                            {% if internal_form.response_text.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in internal_form.response_text.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <small class="form-text text-muted">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                Internal notes are only visible to staff and are not shown to the complainant.
+                            </small>
+                        </div>
+                        <button type="submit" name="submit_internal" class="btn btn-warning">
+                            <i class="fas fa-plus mr-2"></i>Add Internal Note
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Feedback Section -->
+            {% if complaint.status == 'resolved' %}
+                <div class="dashboard-card mb-4">
+                    <div class="card-header">
+                        <h5><i class="fas fa-star mr-2"></i>Feedback</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if feedback %}
+                            <div class="alert alert-success">
+                                <h6>Your Feedback</h6>
+                                <div class="mb-2">
+                                    <strong>Rating:</strong> 
+                                    <span class="text-warning">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= feedback.rating %}
+                                                <i class="fas fa-star"></i>
+                                            {% else %}
+                                                <i class="far fa-star"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </span>
+                                    <span class="ml-2">({{ feedback.get_rating_display }})</span>
+                                </div>
+                                {% if feedback.comment %}
+                                    <div class="mb-2">
+                                        <strong>Comment:</strong>
+                                        <p class="mb-0">{{ feedback.comment|linebreaks }}</p>
+                                    </div>
+                                {% endif %}
+                                <small class="text-muted">Submitted on {{ feedback.created_at|date:"F d, Y g:i A" }}</small>
+                            </div>
+                        {% elif request.user == complaint.user %}
+                            <div class="alert alert-info">
+                                <h6>How was your experience?</h6>
+                                <p class="mb-3">Please provide feedback on how this complaint was resolved. Your feedback helps us improve our services.</p>
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <div class="form-group">
+                                        <label for="{{ feedback_form.rating.id_for_label }}">Rating</label>
+                                        {{ feedback_form.rating }}
+                                        {% if feedback_form.rating.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {% for error in feedback_form.rating.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="{{ feedback_form.comment.id_for_label }}">Comment (Optional)</label>
+                                        {{ feedback_form.comment }}
+                                        {% if feedback_form.comment.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {% for error in feedback_form.comment.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <button type="submit" name="submit_feedback" class="btn btn-success">
+                                        <i class="fas fa-star mr-2"></i>Submit Feedback
+                                    </button>
+                                </form>
+                            </div>
+                        {% else %}
+                            <p class="text-muted">No feedback provided yet.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="col-md-4">
+            {% if request.user.is_staff %}
+                <div class="dashboard-card mb-4">
+                    <div class="card-header">
+                        <h5>Update Status</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="{{ status_form.status.id_for_label }}">Status</label>
+                                {{ status_form.status }}
+                            </div>
+                            <button type="submit" name="update_status" class="btn btn-primary">
+                                <i class="fas fa-sync-alt mr-2"></i>Update Status
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Complaint Information -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h5>Complaint Information</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Status
+                            <span class="badge 
+                                {% if complaint.status == 'pending' %}badge-secondary
+                                {% elif complaint.status == 'in_progress' %}badge-info
+                                {% elif complaint.status == 'resolved' %}badge-success
+                                {% elif complaint.status == 'rejected' %}badge-danger
+                                {% endif %}">
+                                {{ complaint.get_status_display }}
+                            </span>
+                        </li>
+                        {% if request.user.is_staff or request.user.is_superuser %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Category
+                            <span>{{ complaint.category.name }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Priority
+                            <span class="badge 
+                                {% if complaint.priority == 'low' %}badge-secondary
+                                {% elif complaint.priority == 'medium' %}badge-info
+                                {% elif complaint.priority == 'high' %}badge-warning
+                                {% elif complaint.priority == 'urgent' %}badge-danger
+                                {% endif %}">
+                                {{ complaint.get_priority_display }}
+                            </span>
+                        </li>
+                        {% endif %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Submitted By
+                            <span>
+                                {% if complaint.is_anonymous %}
+                                    <span class="text-muted">
+                                        <i class="fas fa-user-secret mr-1"></i>Anonymous
+                                    </span>
+                                {% else %}
+                                    {{ complaint.user.username }}
+                                    {% if complaint.user.profile.user_type == 'teacher' %}
+                                        <span class="teacher-badge"><i class="fas fa-chalkboard-teacher mr-1"></i>Teacher</span>
+                                    {% else %}
+                                        <span class="student-badge"><i class="fas fa-user-graduate mr-1"></i>Student</span>
+                                    {% endif %}
+                                {% endif %}
+                            </span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Created
+                            <span>{{ complaint.created_at|date:"F d, Y g:i A" }}</span>
+                        </li>
+                        {% if complaint.resolved_at %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Resolved
+                            <span>{{ complaint.resolved_at|date:"F d, Y g:i A" }}</span>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Attachments Section -->
+            {% if complaint.attachments.all %}
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h5><i class="fas fa-paperclip mr-2"></i>Attachments</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for attachment in complaint.attachments.all %}
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-shrink-0">
+                                            {% with file_ext=attachment.filename|lower|slice:"-4:" %}
+                                                {% if file_ext == ".jpg" or file_ext == ".png" or file_ext == ".gif" or file_ext == "jpeg" %}
+                                                    <i class="fas fa-image fa-2x text-primary"></i>
+                                                {% elif file_ext == ".pdf" %}
+                                                    <i class="fas fa-file-pdf fa-2x text-danger"></i>
+                                                {% elif file_ext == ".doc" or file_ext == "docx" %}
+                                                    <i class="fas fa-file-word fa-2x text-primary"></i>
+                                                {% else %}
+                                                    <i class="fas fa-file fa-2x text-secondary"></i>
+                                                {% endif %}
+                                            {% endwith %}
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h6 class="card-title mb-1">{{ attachment.filename|truncatechars:20 }}</h6>
+                                            <small class="text-muted">{{ attachment.uploaded_at|date:"M d, Y" }}</small>
+                                        </div>
+                                    </div>
+                                    <div class="mt-2">
+                                        <a href="{{ attachment.file.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                            <i class="fas fa-download mr-1"></i>Download
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

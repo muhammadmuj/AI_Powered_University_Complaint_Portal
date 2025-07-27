@@ -1,0 +1,149 @@
+{% extends "layouts/app.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12 dashboard-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1>Admin Dashboard</h1>
+                    <p class="lead">
+                        Welcome, {{ request.user.username }}!
+                        {% if request.user.profile.user_type == 'teacher' %}
+                            <span class="teacher-badge"><i class="fas fa-chalkboard-teacher mr-1"></i>Teacher</span>
+                            {% if request.user.profile.department %}
+                                <small class="text-muted ml-2">{{ request.user.profile.department }}</small>
+                            {% endif %}
+                        {% else %}
+                            <span class="student-badge"><i class="fas fa-user-graduate mr-1"></i>Student</span>
+                        {% endif %}
+                    </p>
+                </div>
+                <div>
+                    <a href="{% url 'complaint_create' %}" class="btn btn-primary">
+                        <i class="fas fa-plus-circle mr-2"></i>Submit New Complaint
+                    </a>
+                    <a href="{% url 'complaint_list' %}" class="btn btn-outline-secondary ml-2">
+                        <i class="fas fa-list mr-2"></i>View All Complaints
+                    </a>
+                    <a href="{% url 'logout' %}" class="btn btn-outline-danger ml-2">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stats-card bg-light">
+                <h5 class="card-title">Pending</h5>
+                <h2 class="display-4">{{ pending_count }}</h2>
+                <p class="text-muted">Complaints awaiting review</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card bg-info text-white">
+                <h5 class="card-title">In Progress</h5>
+                <h2 class="display-4">{{ in_progress_count }}</h2>
+                <p>Complaints being addressed</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card bg-success text-white">
+                <h5 class="card-title">Resolved</h5>
+                <h2 class="display-4">{{ resolved_count }}</h2>
+                <p>Successfully resolved complaints</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card bg-danger text-white">
+                <h5 class="card-title">Rejected</h5>
+                <h2 class="display-4">{{ rejected_count }}</h2>
+                <p>Complaints that were rejected</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Statistics Row -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="stats-card bg-warning text-white">
+                <h5 class="card-title"><i class="fas fa-star mr-2"></i>Feedback Provided</h5>
+                <h2 class="display-4">{{ feedback_count }}</h2>
+                <p>Resolved complaints with feedback</p>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="stats-card bg-secondary text-white">
+                <h5 class="card-title"><i class="fas fa-clock mr-2"></i>Feedback Pending</h5>
+                <h2 class="display-4">{{ feedback_pending_count }}</h2>
+                <p>Resolved complaints awaiting feedback</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="dashboard-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recent Complaints</h5>
+                    <a href="{% url 'complaint_list' %}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-eye mr-1"></i>View All
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if recent_complaints %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th><i class="fas fa-heading mr-2"></i>Title</th>
+                                        <th><i class="fas fa-tag mr-2"></i>Category</th>
+                                        <th><i class="fas fa-info-circle mr-2"></i>Status</th>
+                                        <th><i class="fas fa-calendar-alt mr-2"></i>Date</th>
+                                        <th><i class="fas fa-cogs mr-2"></i>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for complaint in recent_complaints %}
+                                    <tr>
+                                        <td>{{ complaint.title }}</td>
+                                        <td>{{ complaint.category.name }}</td>
+                                        <td>
+                                            {% if complaint.status == 'pending' %}
+                                                <span class="badge badge-secondary">Pending</span>
+                                            {% elif complaint.status == 'in_progress' %}
+                                                <span class="badge badge-info">In Progress</span>
+                                            {% elif complaint.status == 'resolved' %}
+                                                <span class="badge badge-success">Resolved</span>
+                                            {% elif complaint.status == 'rejected' %}
+                                                <span class="badge badge-danger">Rejected</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ complaint.created_at|date:"M d, Y" }}</td>
+                                        <td>
+                                            <a href="{% url 'complaint_detail' complaint.id %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye mr-1"></i>View
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No complaints found.</p>
+                            <a href="{% url 'complaint_create' %}" class="btn btn-primary mt-2">
+                                <i class="fas fa-plus-circle mr-2"></i>Submit Your First Complaint
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

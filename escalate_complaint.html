@@ -1,0 +1,143 @@
+{% extends "layouts/app.html" %}
+
+{% block title %}Escalate Complaint - University Complaint Portal{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12 dashboard-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1><i class="fas fa-exclamation-triangle me-2"></i>Escalate Complaint</h1>
+                    <p class="lead">Increase the priority and escalation level of this complaint</p>
+                </div>
+                <div>
+                    <a href="{% url 'complaint_detail' complaint.id %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Complaint
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h5>Complaint Details</h5>
+                </div>
+                <div class="card-body">
+                    <h6>{{ complaint.title }}</h6>
+                    <p class="text-muted">{{ complaint.description|truncatewords:30 }}</p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Category:</strong> {{ complaint.category.name }}<br>
+                            <strong>Current Priority:</strong> 
+                            <span class="badge 
+                                {% if complaint.priority == 'low' %}badge-secondary
+                                {% elif complaint.priority == 'medium' %}badge-info
+                                {% elif complaint.priority == 'high' %}badge-warning
+                                {% elif complaint.priority == 'urgent' %}badge-danger
+                                {% endif %}">
+                                {{ complaint.get_priority_display }}
+                            </span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Status:</strong> 
+                            <span class="badge 
+                                {% if complaint.status == 'pending' %}badge-secondary
+                                {% elif complaint.status == 'in_progress' %}badge-info
+                                {% elif complaint.status == 'resolved' %}badge-success
+                                {% elif complaint.status == 'rejected' %}badge-danger
+                                {% endif %}">
+                                {{ complaint.get_status_display }}
+                            </span><br>
+                            <strong>Escalation Level:</strong> {{ complaint.escalation_level }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="card-header bg-warning text-dark">
+                    <h5><i class="fas fa-exclamation-triangle me-2"></i>Escalation Confirmation</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <h6><i class="fas fa-info-circle me-2"></i>What will happen when you escalate:</h6>
+                        <ul class="mb-0">
+                            <li>Escalation level will increase by 1</li>
+                            <li>Priority will be automatically updated based on escalation level</li>
+                            <li>This action will be recorded in the complaint history</li>
+                            <li>Higher priority complaints receive faster attention</li>
+                        </ul>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label><strong>New Escalation Level:</strong> {{ complaint.escalation_level|add:1 }}</label><br>
+                            <label><strong>New Priority:</strong> 
+                                {% if complaint.escalation_level == 0 %}
+                                    <span class="badge badge-warning">High</span>
+                                {% elif complaint.escalation_level >= 1 %}
+                                    <span class="badge badge-danger">Urgent</span>
+                                {% endif %}
+                            </label>
+                        </div>
+                        
+                        <div class="form-group d-flex justify-content-between">
+                            <button type="submit" class="btn btn-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>Confirm Escalation
+                            </button>
+                            <a href="{% url 'complaint_detail' complaint.id %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h5><i class="fas fa-info-circle me-2"></i>Escalation Guidelines</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                            <strong>Level 1:</strong> High Priority - Requires immediate attention
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-exclamation-triangle text-danger me-2"></i>
+                            <strong>Level 2+:</strong> Urgent Priority - Critical issue requiring top priority
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-clock text-info me-2"></i>
+                            <strong>Response Time:</strong> Escalated complaints have shorter response times
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-history text-secondary me-2"></i>
+                            <strong>Tracking:</strong> All escalations are logged in complaint history
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h5><i class="fas fa-history me-2"></i>Escalation History</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Current Level:</strong> {{ complaint.escalation_level }}</p>
+                    <p><strong>Current Priority:</strong> {{ complaint.get_priority_display }}</p>
+                    <p><strong>Created:</strong> {{ complaint.created_at|date:"M d, Y" }}</p>
+                    <p><strong>Days Since Creation:</strong> {{ complaint.created_at|timesince }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

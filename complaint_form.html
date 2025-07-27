@@ -1,0 +1,128 @@
+{% extends "layouts/app.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12 dashboard-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1>{{ title }}</h1>
+                    <p class="lead">Please provide details about your complaint</p>
+                </div>
+                <div>
+                    <a href="{% if request.user.is_staff or request.user.is_superuser %}{% url 'dashboard' %}{% else %}{% url 'user_home' %}{% endif %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="dashboard-card">
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="form-group">
+                            <label for="{{ form.title.id_for_label }}">
+                                <i class="fas fa-heading mr-2"></i>Title
+                            </label>
+                            {{ form.title }}
+                            {% if form.title.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.title.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <small class="form-text text-muted">Provide a clear, concise title for your complaint</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ form.description.id_for_label }}">
+                                <i class="fas fa-align-left mr-2"></i>Description
+                            </label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.description.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <small class="form-text text-muted">Please provide detailed information about your complaint. Include relevant dates, locations, and people involved.</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ form.email.id_for_label }}">
+                                <i class="fas fa-envelope mr-2"></i>Email
+                            </label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.email.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <small class="form-text text-muted">We'll send a confirmation and resolution email to this address.</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="form-check">
+                                {{ form.is_anonymous }}
+                                <label class="form-check-label" for="{{ form.is_anonymous.id_for_label }}">
+                                    <i class="fas fa-user-secret mr-2"></i>Submit Anonymously
+                                </label>
+                            </div>
+                            <small class="form-text text-muted">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                Anonymous complaints will not show your name publicly and won't receive email notifications. 
+                                However, this may limit our ability to provide detailed follow-up.
+                            </small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ attachment_form.file.id_for_label }}">
+                                <i class="fas fa-paperclip mr-2"></i>Attachments (Optional)
+                            </label>
+                            {{ attachment_form.file }}
+                            {% if attachment_form.file.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in attachment_form.file.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <small class="form-text text-muted">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                You can upload supporting documents, photos, or other relevant files. 
+                                Supported formats: PDF, DOC, DOCX, JPG, PNG, GIF. Maximum file size: 10MB.
+                            </small>
+                        </div>
+                        
+                        <div class="form-group d-flex justify-content-between">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane mr-2"></i>Submit Complaint
+                            </button>
+                            <a href="{% url 'complaint_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times mr-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
