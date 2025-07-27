@@ -1,0 +1,31 @@
+Category SVM Model Pipeline Steps:
+{'tfidf': TfidfVectorizer(), 'svc': LinearSVC()}
+
+Category SVM Model Parameters:
+{'memory': None, 'steps': [('tfidf', TfidfVectorizer()), ('svc', LinearSVC())], 'verbose': False, 'tfidf': TfidfVectorizer(), 'svc': LinearSVC(), 'tfidf__analyzer': 'word', 'tfidf__binary': False, 'tfidf__decode_error': 'strict', 'tfidf__dtype': <class 'numpy.float64'>, 'tfidf__encoding': 'utf-8', 'tfidf__input': 'content', 'tfidf__lowercase': True, 'tfidf__max_df': 1.0, 'tfidf__max_features': None, 'tfidf__min_df': 1, 'tfidf__ngram_range': (1, 1), 'tfidf__norm': 'l2', 'tfidf__preprocessor': None, 'tfidf__smooth_idf': True, 'tfidf__stop_words': None, 'tfidf__strip_accents': None, 'tfidf__sublinear_tf': False, 'tfidf__token_pattern': '(?u)\\b\\w\\w+\\b', 'tfidf__tokenizer': None, 'tfidf__use_idf': True, 'tfidf__vocabulary': None, 'svc__C': 1.0, 'svc__class_weight': None, 'svc__dual': 'auto', 'svc__fit_intercept': True, 'svc__intercept_scaling': 1, 'svc__loss': 'squared_hinge', 'svc__max_iter': 1000, 'svc__multi_class': 'ovr', 'svc__penalty': 'l2', 'svc__random_state': None, 'svc__tol': 0.0001, 'svc__verbose': 0}
+
+Category SVM Model TF-IDF Vocabulary (first 20):
+[('my', 37), ('professor', 45), ('hasn', 25), ('returned', 49), ('graded', 23), ('papers', 42), ('for', 20), ('weeks', 55), ('leaky', 30), ('roof', 50), ('in', 27), ('12', 0), ('classroom', 11), ('damaging', 14), ('equipment', 16), ('wi', 57), ('fi', 18), ('disconnects', 15), ('every', 17), ('15', 1)]
+
+Category SVM Model Coefficients (shape):
+(8, 58)
+
+Category Encoder Classes:
+['Academic' 'Accessibility' 'Harassment' 'Health/Safety' 'IT Services'
+ 'Infrastructure' 'Library' 'Transportation']
+
+Priority Logistic Regression Model Pipeline Steps:
+{'tfidf': TfidfVectorizer(), 'lr': LogisticRegression(max_iter=1000)}
+
+Priority Logistic Regression Model Parameters:
+{'memory': None, 'steps': [('tfidf', TfidfVectorizer()), ('lr', LogisticRegression(max_iter=1000))], 'verbose': False, 'tfidf': TfidfVectorizer(), 'lr': LogisticRegression(max_iter=1000), 'tfidf__analyzer': 'word', 'tfidf__binary': False, 'tfidf__decode_error': 'strict', 'tfidf__dtype': <class 'numpy.float64'>, 'tfidf__encoding': 'utf-8', 'tfidf__input': 'content', 'tfidf__lowercase': True, 'tfidf__max_df': 1.0, 'tfidf__max_features': None, 'tfidf__min_df': 1, 'tfidf__ngram_range': (1, 1), 'tfidf__norm': 'l2', 'tfidf__preprocessor': None, 'tfidf__smooth_idf': True, 'tfidf__stop_words': None, 'tfidf__strip_accents': None, 'tfidf__sublinear_tf': False, 'tfidf__token_pattern': '(?u)\\b\\w\\w+\\b', 'tfidf__tokenizer': None, 'tfidf__use_idf': True, 'tfidf__vocabulary': None, 'lr__C': 1.0, 'lr__class_weight': None, 'lr__dual': False, 'lr__fit_intercept': True, 'lr__intercept_scaling': 1, 'lr__l1_ratio': None, 'lr__max_iter': 1000, 'lr__multi_class': 'deprecated', 'lr__n_jobs': None, 'lr__penalty': 'l2', 'lr__random_state': None, 'lr__solver': 'lbfgs', 'lr__tol': 0.0001, 'lr__verbose': 0, 'lr__warm_start': False}
+
+Priority Logistic Regression TF-IDF Vocabulary (first 20):
+[('my', 37), ('professor', 45), ('hasn', 25), ('returned', 49), ('graded', 23), ('papers', 42), ('for', 20), ('weeks', 55), ('leaky', 30), ('roof', 50), ('in', 27), ('12', 0), ('classroom', 11), ('damaging', 14), ('equipment', 16), ('wi', 57), ('fi', 18), ('disconnects', 15), ('every', 17), ('15', 1)]
+
+Priority Logistic Regression Coefficients (shape):
+(4, 58)
+
+Priority Encoder Classes:
+['High' 'Low' 'Medium' 'Urgent']
+

@@ -1,0 +1,350 @@
+/* Global Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, rgba(245, 247, 250, 0.9) 0%, rgba(195, 207, 226, 0.9) 100%);
+    background-image: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-blend-mode: overlay;
+    min-height: 100vh;
+    padding-bottom: 50px;
+}
+
+.container {
+    margin-top: 30px;
+}
+
+/* Auth Pages Styling */
+.auth-container {
+    max-width: 500px;
+    margin: 50px auto;
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    padding: 30px;
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(to right, #4a89dc, #5cb85c, #f0ad4e);
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.auth-header h1 {
+    color: #3a3a3a;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.auth-header p {
+    color: #777;
+}
+
+.auth-form .form-group {
+    margin-bottom: 20px;
+}
+
+.auth-form label {
+    font-weight: 500;
+    color: #555;
+}
+
+.auth-form .form-control {
+    border-radius: 5px;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    transition: all 0.3s;
+}
+
+.auth-form .form-control:focus {
+    border-color: #4a89dc;
+    box-shadow: 0 0 0 0.2rem rgba(74, 137, 220, 0.25);
+}
+
+.auth-btn {
+    width: 100%;
+    padding: 12px;
+    font-weight: 600;
+    font-size: 16px;
+    border-radius: 5px;
+    background-color: #4a89dc;
+    border: none;
+    transition: all 0.3s;
+}
+
+.auth-btn:hover {
+    background-color: #3b7dd8;
+    transform: translateY(-2px);
+}
+
+.auth-links {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.auth-links a {
+    color: #4a89dc;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.auth-links a:hover {
+    color: #3b7dd8;
+    text-decoration: underline;
+}
+
+/* User Type Selection */
+.user-type-selector {
+    display: flex;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    overflow: hidden;
+    border: 1px solid #ddd;
+}
+
+.user-type-option {
+    flex: 1;
+    text-align: center;
+    padding: 12px;
+    cursor: pointer;
+    background-color: #f8f9fa;
+    transition: all 0.3s;
+}
+
+.user-type-option.active {
+    background-color: #4a89dc;
+    color: white;
+    font-weight: 600;
+}
+
+.user-type-option:hover:not(.active) {
+    background-color: #e9ecef;
+}
+
+/* Dashboard Styling */
+.dashboard-header {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.dashboard-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(to right, #4a89dc, #5cb85c, #f0ad4e);
+}
+
+.dashboard-header h1 {
+    color: #3a3a3a;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.dashboard-header .lead {
+    color: #777;
+}
+
+.dashboard-card {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.dashboard-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    background: linear-gradient(to bottom, #4a89dc, #5cb85c);
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.dashboard-card .card-header {
+    background-color: transparent;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    font-weight: 600;
+}
+
+.dashboard-card .card-body {
+    padding: 20px;
+}
+
+.stats-card {
+    text-align: center;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s;
+    background-color: rgba(255, 255, 255, 0.95);
+    position: relative;
+    overflow: hidden;
+}
+
+.stats-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background-color: currentColor;
+    opacity: 0.5;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.stats-card h5 {
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.stats-card .display-4 {
+    font-weight: 700;
+}
+
+/* Teacher specific styling */
+.teacher-badge {
+    background-color: #5cb85c;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+    margin-left: 10px;
+}
+
+.student-badge {
+    background-color: #4a89dc;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+    margin-left: 10px;
+}
+
+/* Button Styling */
+.btn-primary {
+    background-color: #4a89dc;
+    border-color: #4a89dc;
+}
+
+.btn-primary:hover {
+    background-color: #3b7dd8;
+    border-color: #3b7dd8;
+}
+
+.btn-outline-secondary {
+    color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-outline-danger {
+    color: #dc3545;
+    border-color: #dc3545;
+}
+
+.btn-outline-danger:hover {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* Table Styling */
+.table {
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table thead th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    color: #495057;
+    font-weight: 600;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Badge Styling */
+.badge {
+    padding: 8px 12px;
+    font-weight: 500;
+    border-radius: 30px;
+}
+
+/* Welcome Page */
+.welcome-container {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 10px;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+}
+
+.welcome-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(to right, #4a89dc, #5cb85c, #f0ad4e);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .auth-container {
+        margin: 20px;
+    }
+    
+    .dashboard-header {
+        text-align: center;
+    }
+    
+    .dashboard-header .btn {
+        margin-top: 15px;
+    }
+} 
